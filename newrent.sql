@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2025 at 01:37 AM
+-- Generation Time: Jan 21, 2025 at 04:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -68,7 +68,24 @@ CREATE TABLE `kyc_verifications` (
 INSERT INTO `kyc_verifications` (`id`, `mobile`, `user_name`, `father_name`, `mother_name`, `residential_proof_path`, `id_proof_path`, `selfie_path`, `status`, `created_at`) VALUES
 (1, '9879879787', 'Amit Raut', 'राम गोविन्द राउत', 'सकुन्तला देवी राउत', 'uploads/kyc/6782f8ae2db5c.png', 'uploads/kyc/6782f8ae2dcbc.png', 'uploads/kyc/6782f8ae2de09.png', 'Verified', '2025-01-11 23:03:10'),
 (7, '1234567890', 'Ashish Raut', 'kishun', 'gita', 'uploads/kyc/6782f32b52252.jpg', 'uploads/kyc/6782f32b52391.jpg', 'uploads/kyc/6782f32b5249a.jpg', 'Verified', '2025-01-11 22:39:39'),
-(8, '9999999999', '\r\nSamip Chhetri', 'xyz', 'xym', 'uploads/kyc/678362c0ef93f.png', 'uploads/kyc/678362c0efa94.png', 'uploads/kyc/678362c0f34bb.png', 'Verified', '2025-01-12 06:35:44');
+(8, '9999999999', '\r\nSamip Chhetri', 'xyz', 'xym', 'uploads/kyc/678362c0ef93f.png', 'uploads/kyc/678362c0efa94.png', 'uploads/kyc/678362c0f34bb.png', 'Verified', '2025-01-12 06:35:44'),
+(9, '1234567891', 'xyz', 'abc', 'efg', 'uploads/kyc/6789094a296c4.png', 'uploads/kyc/6789094a2a0f3.png', 'uploads/kyc/6789094a2a5cc.png', 'Rejected', '2025-01-16 13:27:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` int(11) NOT NULL,
+  `pid` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `status` enum('pending','success','failure') DEFAULT 'pending',
+  `transaction_id` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -100,15 +117,28 @@ CREATE TABLE `room_rental_registrations` (
   `vacant` int(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp(),
-  `user_id` int(10) DEFAULT NULL
+  `user_id` int(10) DEFAULT NULL,
+  `payment_status` enum('pending','completed','failed','refunded') NOT NULL DEFAULT 'pending'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `room_rental_registrations`
 --
 
-INSERT INTO `room_rental_registrations` (`id`, `fullname`, `mobile`, `alternat_mobile`, `email`, `country`, `state`, `city`, `landmark`, `rent`, `sale`, `deposit`, `plot_number`, `rooms`, `address`, `accommodation`, `description`, `image`, `open_for_sharing`, `other`, `vacant`, `created_at`, `updated_at`, `user_id`) VALUES
-(14, 'jelly fish', '2345676997', '', 'chet@gmrail.com', 'india', 'karnataka', 'Belagavi', '', '1232', '12', '33333', '78 nh', '1bhk', 'port road bgm', '', '', 'uploads/', NULL, NULL, 1, '2018-03-09 05:06:43', '2018-03-09 05:06:43', 2);
+INSERT INTO `room_rental_registrations` (`id`, `fullname`, `mobile`, `alternat_mobile`, `email`, `country`, `state`, `city`, `landmark`, `rent`, `sale`, `deposit`, `plot_number`, `rooms`, `address`, `accommodation`, `description`, `image`, `open_for_sharing`, `other`, `vacant`, `created_at`, `updated_at`, `user_id`, `payment_status`) VALUES
+(14, 'jelly fish', '2345676997', '', 'chet@gmrail.com', 'india', 'karnataka', 'Belagavi', 'near qfx', '1232', '12', '33333', '78 nh', '1bhk', 'port road bgm', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/', NULL, NULL, 0, '2018-03-09 05:06:43', '2018-03-09 05:06:43', 2, 'completed'),
+(16, 'Amit Raut', '1234567890', '', 'indira45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '4000', '3500', '500', 'new road', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-23 003832.png', NULL, NULL, 1, '2025-01-16 05:22:37', '2025-01-16 05:22:37', 1, 'completed'),
+(22, 'Amit Raut', '1234807890', '', 'inir45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:24:02', '2025-01-16 09:23:41', 1, 'completed'),
+(21, 'Amit Raut', '1234507890', '', 'inira45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:22:11', '2025-01-16 08:22:11', 1, 'completed'),
+(20, 'Amit Raut', '1234567878', '', 'india45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '8000', '7500', '500', 'bp chowk', 'double', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot (1).png', NULL, NULL, 1, '2025-01-16 08:17:50', '2025-01-16 08:17:50', 1, 'completed'),
+(23, 'Amit Raut', '1204807890', '', 'inir645@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:25:11', '2025-01-16 08:25:11', 1, 'pending'),
+(24, 'Amit Raut', '9806800003', '', 'rautamit930@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:34:01', '2025-01-16 08:34:01', 1, 'pending'),
+(25, 'Amit Raut', '1224807899', '', 'inrir645@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:37:39', '2025-01-16 08:37:39', 1, 'pending'),
+(26, 'Amit Raut', '1226807899', '', 'inrir60045@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:38:11', '2025-01-16 08:38:11', 1, 'pending'),
+(27, 'Amit Raut', '1226877899', '', 'air60045@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:39:57', '2025-01-16 08:39:57', 1, 'pending'),
+(28, 'Amit Raut', '1234537890', '', 'indir22a45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 162131.png', NULL, NULL, 1, '2025-01-16 08:47:47', '2025-01-16 08:47:47', 1, 'pending'),
+(29, 'Amit Raut', '9812402806', '', 'indira8845@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '4000', '3500', '500', 'bp chowk', 'single', 'Nepalguj', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-22 234958.png', NULL, NULL, 1, '2025-01-18 06:14:14', '2025-01-18 06:14:14', 1, 'pending'),
+(30, 'Amit Raut', '1234567866', '', 'ind45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '8000', '7500', '500', 'Blashpur', 'double', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-23 003808.png', NULL, NULL, 1, '2025-01-19 12:35:55', '2025-01-19 12:35:55', 2, 'pending');
 
 -- --------------------------------------------------------
 
@@ -145,15 +175,16 @@ CREATE TABLE `room_rental_registrations_apartment` (
   `vacant` int(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp(),
-  `user_id` int(10) DEFAULT NULL
+  `user_id` int(10) DEFAULT NULL,
+  `payment_status` enum('completed','pending') DEFAULT 'pending'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `room_rental_registrations_apartment`
 --
 
-INSERT INTO `room_rental_registrations_apartment` (`id`, `fullname`, `mobile`, `alternat_mobile`, `email`, `country`, `state`, `city`, `landmark`, `rent`, `deposit`, `plot_number`, `apartment_name`, `ap_number_of_plats`, `rooms`, `floor`, `purpose`, `own`, `area`, `address`, `accommodation`, `description`, `image`, `open_for_sharing`, `other`, `vacant`, `created_at`, `updated_at`, `user_id`) VALUES
-(1, 'apart', '2345676567', '', 'jhbdah@gmail.com', 'nepal', 'lumbini', 'nepalgunj', 'nere sanima bank', '3000', '500', '', 'mant apartment', '101', 'single', '2nd', 'Residential', 'rented', '1sqr feet', 'npj 12', 'wifi', 'well ', 'uploads/Jellyfish.jpg', NULL, NULL, 1, '2018-04-04 11:20:56', '2018-04-04 11:20:56', 1);
+INSERT INTO `room_rental_registrations_apartment` (`id`, `fullname`, `mobile`, `alternat_mobile`, `email`, `country`, `state`, `city`, `landmark`, `rent`, `deposit`, `plot_number`, `apartment_name`, `ap_number_of_plats`, `rooms`, `floor`, `purpose`, `own`, `area`, `address`, `accommodation`, `description`, `image`, `open_for_sharing`, `other`, `vacant`, `created_at`, `updated_at`, `user_id`, `payment_status`) VALUES
+(1, 'apart', '2345676567', '', 'jhbdah@gmail.com', 'nepal', 'lumbini', 'nepalgunj', 'nere sanima bank', '3000', '500', '', 'mant apartment', '101', 'single', '2nd', 'Residential', 'rented', '1sqr feet', 'npj 12', 'wifi', 'well ', 'uploads/Jellyfish.jpg', NULL, NULL, 1, '2018-04-04 11:20:56', '2018-04-04 11:20:56', 1, 'completed');
 
 -- --------------------------------------------------------
 
@@ -183,7 +214,8 @@ INSERT INTO `users` (`id`, `fullname`, `mobile`, `username`, `email`, `password`
 (1, 'Amit Raut', '9879879787', 'admin', 'admin@admin.com', '21232f297a57a5a743894a0e4a801fc3', NULL, NULL, 'admin', 1, 'Pending'),
 (2, '\r\nSamip Chhetri', '9999999999', 'samip', 'samip@gmail.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2018-02-08 06:53:53', '2018-02-08 06:53:53', 'user', 1, 'Pending'),
 (7, 'Ashish Raut', '1234567890', 'Ashish', 'rautnilan@gmail.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2025-01-11 20:15:24', '2025-01-11 20:15:24', 'user', 1, 'Pending'),
-(9, 'Ashish Raut', '1234567892', 'user', 'shailendra_karn@yahoo.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2025-01-11 22:14:03', '2025-01-11 22:14:03', 'user', 1, 'Pending');
+(9, 'Ashish Raut', '1234567892', 'user', 'shailendra_karn@yahoo.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2025-01-11 22:14:03', '2025-01-11 22:14:03', 'user', 1, 'Pending'),
+(10, 'xyz', '1234567891', 'xyz', 'xyz123@gmail.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2025-01-16 13:26:46', '2025-01-16 13:26:46', 'user', 1, 'Pending');
 
 --
 -- Indexes for dumped tables
@@ -201,6 +233,13 @@ ALTER TABLE `cmps`
 ALTER TABLE `kyc_verifications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_mobile` (`mobile`);
+
+--
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pid` (`pid`);
 
 --
 -- Indexes for table `room_rental_registrations`
@@ -245,13 +284,19 @@ ALTER TABLE `cmps`
 -- AUTO_INCREMENT for table `kyc_verifications`
 --
 ALTER TABLE `kyc_verifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `room_rental_registrations`
 --
 ALTER TABLE `room_rental_registrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `room_rental_registrations_apartment`
@@ -263,7 +308,7 @@ ALTER TABLE `room_rental_registrations_apartment`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

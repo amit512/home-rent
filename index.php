@@ -22,45 +22,51 @@
     }
 
     try {
-      // Prepare the SQL query with placeholders
+      // Prepare the SQL query for apartments
       $stmt = $connect->prepare("
         SELECT * FROM room_rental_registrations_apartment 
         WHERE 
           (country LIKE :keyword OR state LIKE :keyword OR city LIKE :keyword OR address LIKE :keyword OR rooms LIKE :keyword OR landmark LIKE :keyword OR rent LIKE :keyword OR deposit LIKE :keyword)
           AND 
           (country LIKE :location OR state LIKE :location OR city LIKE :location OR address LIKE :location OR landmark LIKE :location)
+          AND 
+          payment_status = 'completed'
       ");
-
+    
       // Bind parameters for keyword and location search
       $stmt->bindParam(':keyword', $concats[0], PDO::PARAM_STR);
       $stmt->bindParam(':location', $loc[0], PDO::PARAM_STR);
-
+    
       // Execute the query
       $stmt->execute();
       $data2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-      // Same for other query
+    
+      // Prepare the SQL query for rooms
       $stmt = $connect->prepare("
         SELECT * FROM room_rental_registrations 
         WHERE 
           (country LIKE :keyword OR state LIKE :keyword OR city LIKE :keyword OR address LIKE :keyword OR rooms LIKE :keyword OR landmark LIKE :keyword OR rent LIKE :keyword OR deposit LIKE :keyword)
           AND 
           (country LIKE :location OR state LIKE :location OR city LIKE :location OR address LIKE :location OR landmark LIKE :location)
+          AND 
+          payment_status = 'completed'
       ");
-
+    
+      // Bind parameters for keyword and location search
       $stmt->bindParam(':keyword', $concats[0], PDO::PARAM_STR);
       $stmt->bindParam(':location', $loc[0], PDO::PARAM_STR);
-
+    
       // Execute the second query
       $stmt->execute();
       $data8 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
       // Merge results
       $data = array_merge($data2, $data8);
-
+    
     } catch(PDOException $e) {
       $errMsg = $e->getMessage();
     }
+    
   }
 ?>
 <!DOCTYPE html>
@@ -152,7 +158,7 @@ button:focus {
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
       <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top">Logo/Home</a>
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">UrbanDwells</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           Menu
           <i class="fa fa-bars"></i>
@@ -303,34 +309,47 @@ foreach ($data as $key => $value) {
       <br><br><br><br><br><br>
     </section>    
 
-    <!-- Footer -->
-    <footer style="background-color: #ccc;">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4">
-            <span class="copyright">Copyright &copy; Your Website 2018</span>
-          </div>
-          <div class="col-md-4">
-            <ul class="list-inline social-buttons">
-              <li class="list-inline-item">
-                <a href="#">
-                  <i class="fa fa-twitter"></i>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="#">
-                  <i class="fa fa-facebook"></i>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="#">
-                  <i class="fa fa-linkedin"></i>
-                </a>
-              </li>
-            </ul>
+    <footer>
+      <div class="row">
+        <div class="col">
+        <a class="navbar-brand "><h3>UrbanDwells</h3></a>
+        <p>At UrbanDwells, we make finding your perfect home simple, reliable, and stress-free. Whether you're searching for cozy apartments, spacious family homes, or luxurious villas, our platform offers a wide range of rental options to suit every lifestyle and budget.
+</p>
+        </div>
+        <div class="col">
+          <h3 class="office-title">Office </h3>
+          <p>Dhamboji Road</p>
+          <p>Nepalgunj, Banke</p>
+          <P class="email-id">urbandwells@gmail.com</P>
+          <h4 class="phone-number">+91 - 012348888</h4>
+        </div>
+        <div class="col">
+          <h3 class="link-title">Links </h3>
+          <ul>
+            <li class="pages"><a href="">Home</a></li>
+            <li class="pages"><a href="">Services</a></li>
+            <li class="pages"><a href="">About us</a></li>
+            <li class="pages"><a href="">Features</a></li>
+            <li class="pages"><a href="">Contacts</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Newsletter </h3>
+          <form action="">
+          <i class="far fa-envelope"></i>
+            <input type="email" placeholder="Enter your email id" required>
+            <button type="submit"><i class="fas fa-arrow-right"></i></button>
+          </form>
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-whatsapp"></i>
+            <i class="fab fa-pinterest"></i>
           </div>
         </div>
       </div>
+      <hr>
+      <p class="copyright">Urban Dwells © 2024 - All Rights Reserved</p>
     </footer>
    
     <!-- Bootstrap core JavaScript -->

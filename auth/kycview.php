@@ -1,6 +1,8 @@
 <?php
 // Include the database connection file
-require '../config/config.php'; // Ensure the $connect PDO instance is available
+require '../config/config.php';
+	if(empty($_SESSION['username']))
+		header('Location: login.php');// Ensure the $connect PDO instance is available
 
 // Fetch all pending and verified KYC submissions
 $pendingStmt = $connect->prepare("SELECT * FROM kyc_verifications WHERE status = 'Pending'");
@@ -29,7 +31,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<div class="container">
+<?php include '../include/header.php';?>
+<!-- Header nav -->	
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#212529;" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="../index.php">Logo/Home</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav text-uppercase ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#"><?php echo $_SESSION['fullname']; ?> <?php if($_SESSION['role'] == 'admin'){ echo "(Admin)"; } ?></a>
+            </li>
+            <li class="nav-item">
+              <a href="logout.php" class="nav-link">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+	<!-- end header nav -->
+    <?php include '../include/side-nav.php';?>
+<div class="container" style="margin-left: 16%;">
     <h1>KYC Management</h1>
     <!-- Pending KYC Submissions -->
     <h2>Pending Submissions</h2>

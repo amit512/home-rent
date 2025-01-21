@@ -21,6 +21,11 @@
 	      	 	} ?>             
             </li>
             <li class="nav-item">
+            	<?php if($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'user'){ 
+	        		echo '<a href="../app/payment.php" class="nav-link">Payment</a>';
+	      	 	} ?>             
+            </li>
+            <li class="nav-item">
 	        	<a href="../app/list.php" class="nav-link">Details/Update</a>
             </li>
 

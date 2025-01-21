@@ -166,7 +166,8 @@
 	}
 
 	if(isset($_GET['action']) && $_GET['action'] == 'reg') {
-		$errMsg = 'Registration successfull. Thank you';
+		
+		$errMsg ='Please procide for payment in payment section for your ad to be public.';
 	}
 ?>
 <?php include '../include/header.php';?>
