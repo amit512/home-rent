@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 21, 2025 at 04:37 AM
+-- Generation Time: Jan 22, 2025 at 10:52 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -138,7 +138,7 @@ INSERT INTO `room_rental_registrations` (`id`, `fullname`, `mobile`, `alternat_m
 (27, 'Amit Raut', '1226877899', '', 'air60045@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 163410.png', NULL, NULL, 1, '2025-01-16 08:39:57', '2025-01-16 08:39:57', 1, 'pending'),
 (28, 'Amit Raut', '1234537890', '', 'indir22a45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'near qfx', '8000', '7500', '1000', 'bp chowk', 'single', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2025-01-14 162131.png', NULL, NULL, 1, '2025-01-16 08:47:47', '2025-01-16 08:47:47', 1, 'pending'),
 (29, 'Amit Raut', '9812402806', '', 'indira8845@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '4000', '3500', '500', 'bp chowk', 'single', 'Nepalguj', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-22 234958.png', NULL, NULL, 1, '2025-01-18 06:14:14', '2025-01-18 06:14:14', 1, 'pending'),
-(30, 'Amit Raut', '1234567866', '', 'ind45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '8000', '7500', '500', 'Blashpur', 'double', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-23 003808.png', NULL, NULL, 1, '2025-01-19 12:35:55', '2025-01-19 12:35:55', 2, 'pending');
+(30, 'Amit Raut', '1234567866', '', 'ind45@gmail.com', 'Nepal', 'Lumbini', 'Nepalgunj', 'nera sanima bank', '8000', '7500', '500', 'Blashpur', 'double', 'Nepalguj, Banka', '24 hrs water supply,etc', 'student laii matrai dini ho', 'uploads/Screenshot 2024-07-23 003808.png', NULL, NULL, 1, '2025-01-19 12:35:55', '2025-01-19 12:35:55', 2, 'completed');
 
 -- --------------------------------------------------------
 
@@ -185,6 +185,29 @@ CREATE TABLE `room_rental_registrations_apartment` (
 
 INSERT INTO `room_rental_registrations_apartment` (`id`, `fullname`, `mobile`, `alternat_mobile`, `email`, `country`, `state`, `city`, `landmark`, `rent`, `deposit`, `plot_number`, `apartment_name`, `ap_number_of_plats`, `rooms`, `floor`, `purpose`, `own`, `area`, `address`, `accommodation`, `description`, `image`, `open_for_sharing`, `other`, `vacant`, `created_at`, `updated_at`, `user_id`, `payment_status`) VALUES
 (1, 'apart', '2345676567', '', 'jhbdah@gmail.com', 'nepal', 'lumbini', 'nepalgunj', 'nere sanima bank', '3000', '500', '', 'mant apartment', '101', 'single', '2nd', 'Residential', 'rented', '1sqr feet', 'npj 12', 'wifi', 'well ', 'uploads/Jellyfish.jpg', NULL, NULL, 1, '2018-04-04 11:20:56', '2018-04-04 11:20:56', 1, 'completed');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `saved_items`
+--
+
+CREATE TABLE `saved_items` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `saved_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `item_type` enum('room','apartment') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `saved_items`
+--
+
+INSERT INTO `saved_items` (`id`, `user_id`, `item_id`, `saved_at`, `item_type`) VALUES
+(1, 1, 14, '2025-01-22 08:34:49', 'room'),
+(2, 2, 1, '2025-01-22 08:35:35', 'room'),
+(3, 2, 22, '2025-01-22 09:50:00', 'room');
 
 -- --------------------------------------------------------
 
@@ -256,6 +279,13 @@ ALTER TABLE `room_rental_registrations_apartment`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `saved_items`
+--
+ALTER TABLE `saved_items`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_item_unique` (`user_id`,`item_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -305,6 +335,12 @@ ALTER TABLE `room_rental_registrations_apartment`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `saved_items`
+--
+ALTER TABLE `saved_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -319,6 +355,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `kyc_verifications`
   ADD CONSTRAINT `fk_mobile` FOREIGN KEY (`mobile`) REFERENCES `users` (`mobile`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `saved_items`
+--
+ALTER TABLE `saved_items`
+  ADD CONSTRAINT `saved_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

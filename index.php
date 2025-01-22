@@ -93,61 +93,74 @@
     <link href="assets/css/rent.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <style>
-     /* Button Container Styles */
-     .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Space between buttons */
-    margin-top: 20px; /* Gap from content above */
+    /* Button Container Styles */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Space between buttons */
+  margin-top: 20px; /* Gap from content above */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 
 /* General Button Styles */
 button {
-    display: inline-block;
-    font-family: 'Poppins', sans-serif;
-    font-weight: bold;
-    font-size: 16px;
-    width: 180px; /* Equal size for all buttons */
-    height: 50px;
-    border: none;
-    border-radius: 8px; /* Slightly rounded corners */
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease-in-out;
+  display: inline-block;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  width: 180px; /* Equal size for all buttons */
+  height: 50px;
+  border: none;
+  border-radius: 8px; /* Slightly rounded corners */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
 /* Book Now Button */
 button.btn-primary {
-    background: linear-gradient(135deg, #007bff, #00aaff); /* Blue gradient */
-    color: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+  background: linear-gradient(135deg, #007bff, #00aaff); /* Blue gradient */
+  color: #ffffff;
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
 }
 
 button.btn-primary:hover {
-    background: linear-gradient(135deg, #00aaff, #007bff); /* Inverted blue gradient */
-    transform: translateY(-3px); /* Hover lift effect */
-    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.6);
+  background: linear-gradient(135deg, #00aaff, #007bff); /* Inverted blue gradient */
+  transform: translateY(-3px); /* Hover lift effect */
+  box-shadow: 0 10px 20px rgba(0, 123, 255, 0.6);
 }
 
 /* Save for Later Button */
 button.btn-secondary {
-    background: linear-gradient(135deg, #66ccff, #3399ff); /* Lighter blue gradient */
-    color: #ffffff;
-    box-shadow: 0 5px 15px rgba(102, 204, 255, 0.4);
+  background: linear-gradient(135deg, #66ccff, #3399ff); /* Lighter blue gradient */
+  color: #ffffff;
+  box-shadow: 0 5px 15px rgba(102, 204, 255, 0.4);
 }
 
 button.btn-secondary:hover {
-    background: linear-gradient(135deg, #3399ff, #66ccff); /* Inverted lighter blue gradient */
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(102, 204, 255, 0.6);
+  background: linear-gradient(135deg, #3399ff, #66ccff); /* Inverted lighter blue gradient */
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(102, 204, 255, 0.6);
 }
 
 /* Equal Alignment */
 button:focus {
-    outline: none;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  button {
+    width: 100%; /* Make buttons full-width on smaller screens */
+    margin-bottom: 10px; /* Space out buttons vertically */
+  }
+
+  .button-container {
+    flex-direction: column; /* Stack buttons vertically */
+  }
 }
 
 
@@ -246,7 +259,8 @@ button:focus {
               }else{
                 echo "<h2 class='text-center' style='color:red;'>Try Some other keywords</h2>";
               }
-            ?>        
+            ?>   
+                 
             <?php 
 foreach ($data as $key => $value) {           
   echo '<div class="card card-inverse card-info mb-3" style="padding:1%;">          
@@ -293,8 +307,7 @@ foreach ($data as $key => $value) {
 
               // Add the buttons
               echo '<div class="text-center mt-3">
-              <button class="btn btn-primary" onclick="bookNow()">Book Now</button>
-              <button class="btn btn-secondary" onclick="saveForLater()">Save for Later</button>
+               <button class="btn btn-secondary" onclick="saveForLater('.$value['id'].')">Save for Later</button>
             </div>
             ';
           echo '</div>
@@ -302,6 +315,36 @@ foreach ($data as $key => $value) {
       </div>';
 }
 ?>
+<script>
+    async function saveForLater(itemId) {
+    if (!itemId) {
+        alert('Invalid item ID.');
+        return;
+    }
+
+    try {
+        const response = await fetch('./auth/save_item.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ item_id: itemId })
+        });
+
+        const result = await response.json(); // This is where the error happens if the response is not valid JSON
+
+        if (result.success) {
+            alert('Item saved for later!');
+        } else {
+            alert('Failed to save item. Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error saving item:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+</script>
    
           </div>
         </div>
@@ -309,48 +352,7 @@ foreach ($data as $key => $value) {
       <br><br><br><br><br><br>
     </section>    
 
-    <footer>
-      <div class="row">
-        <div class="col">
-        <a class="navbar-brand "><h3>UrbanDwells</h3></a>
-        <p>At UrbanDwells, we make finding your perfect home simple, reliable, and stress-free. Whether you're searching for cozy apartments, spacious family homes, or luxurious villas, our platform offers a wide range of rental options to suit every lifestyle and budget.
-</p>
-        </div>
-        <div class="col">
-          <h3 class="office-title">Office </h3>
-          <p>Dhamboji Road</p>
-          <p>Nepalgunj, Banke</p>
-          <P class="email-id">urbandwells@gmail.com</P>
-          <h4 class="phone-number">+91 - 012348888</h4>
-        </div>
-        <div class="col">
-          <h3 class="link-title">Links </h3>
-          <ul>
-            <li class="pages"><a href="">Home</a></li>
-            <li class="pages"><a href="">Services</a></li>
-            <li class="pages"><a href="">About us</a></li>
-            <li class="pages"><a href="">Features</a></li>
-            <li class="pages"><a href="">Contacts</a></li>
-          </ul>
-        </div>
-        <div class="col">
-          <h3>Newsletter </h3>
-          <form action="">
-          <i class="far fa-envelope"></i>
-            <input type="email" placeholder="Enter your email id" required>
-            <button type="submit"><i class="fas fa-arrow-right"></i></button>
-          </form>
-          <div class="social-icons">
-            <i class="fab fa-facebook-f"></i>
-            <i class="fab fa-twitter"></i>
-            <i class="fab fa-whatsapp"></i>
-            <i class="fab fa-pinterest"></i>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <p class="copyright">Urban Dwells © 2024 - All Rights Reserved</p>
-    </footer>
+    <?php include './include/footer.php';?>
    
     <!-- Bootstrap core JavaScript -->
     <script src="assets/plugins/jquery/jquery.min.js"></script>

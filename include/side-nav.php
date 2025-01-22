@@ -34,15 +34,11 @@
                 echo '<a href="../auth/kycview.php" class="nav-link">View User KYC</a>';
               } ?>
             </li>
-            <li class="nav-item">
-              <?php if($_SESSION['role'] == 'admin'){ 
-                echo '<a href="../app/sms.php" class="nav-link">Send SMS</a>';
-              } ?>
-            </li>
+           
 
             <li class="nav-item">
-              <?php if($_SESSION['role'] == 'admin'){ 
-                echo '<a href="../app/cmplist.php" class="nav-link">Complaint List</a>';
+              <?php if($_SESSION['role'] == 'admin'|| $_SESSION['role'] == 'user'){ 
+                echo '<a href="../app/view_saved.php" class="nav-link">Saved Room</a>';
               } ?>
             </li>
           </ul>

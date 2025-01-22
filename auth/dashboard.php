@@ -54,8 +54,10 @@
       </div>
     </nav>
 	<!-- end header nav -->	
-<?php include '../include/side-nav.php';?>
-	<section class="wrapper" style="margin-left: 16%;margin-top: -11%;">
+    <section style="padding-left:0px; margin-top: -10%;">
+    <?php include '../include/side-nav.php';?>
+    </section>
+	<section class="wrapper" style="margin-left: 16%;margin-top: -23%;">
 		 <div class="container">
 			 <div class="row">
 				<div class="col-md-12">
@@ -321,10 +323,245 @@ $totalIncome = $totalIncomeFromSales + $totalIncomeFromRentApartment;
     }
 </style>
 <?php } ?>
+<?php
+    if ($_SESSION['role'] == 'user') {
+        // Fetch Payment Status Data for rooms rented by the user (Paid vs Unpaid)
+        $stmt = $connect->prepare("
+            SELECT payment_status, COUNT(*) AS count
+            FROM room_rental_registrations
+            WHERE user_id = :user_id
+            GROUP BY payment_status
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $paymentStatusData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Initialize counts for paid and unpaid rooms
+        $counts = [
+            'paid' => 0,
+            'unpaid' => 0
+        ];
+
+        // Fill counts with actual data from the database (for rooms)
+        foreach ($paymentStatusData as $row) {
+            if ($row['payment_status'] == 'completed') {
+                $counts['paid'] += $row['count'];
+            } else {
+                $counts['unpaid'] += $row['count'];
+            }
+        }
+
+        // Fetch Payment Status Data for apartments rented by the user (Paid vs Unpaid)
+        $stmt = $connect->prepare("
+            SELECT payment_status, COUNT(*) AS count
+            FROM room_rental_registrations_apartment
+            WHERE user_id = :user_id
+            GROUP BY payment_status
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $apartmentPaymentStatusData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Initialize counts for paid and unpaid apartments
+        $apartmentCounts = [
+            'paid' => 0,
+            'unpaid' => 0
+        ];
+
+        // Fill counts with actual data from the database (for apartments)
+        foreach ($apartmentPaymentStatusData as $row) {
+            if ($row['payment_status'] == 'completed') {
+                $apartmentCounts['paid'] += $row['count'];
+            } else {
+                $apartmentCounts['unpaid'] += $row['count'];
+            }
+        }
+
+        // Prepare data for the paid/unpaid graph (Rooms vs Apartments)
+        $labels = ['Rooms', 'Apartments'];
+        $paidData = [$counts['paid'], $apartmentCounts['paid']];
+        $unpaidData = [$counts['unpaid'], $apartmentCounts['unpaid']];
+
+        // Fetch Monthly Expense Data for Rooms rented by the user
+        $stmt = $connect->prepare("
+            SELECT MONTH(created_at) AS month, SUM(rent) AS expense
+            FROM room_rental_registrations
+            WHERE user_id = :user_id AND payment_status = 'completed'
+            GROUP BY MONTH(created_at)
+            ORDER BY MONTH(created_at)
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $monthlyExpenseDataRooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch Monthly Expense Data for Apartments rented by the user
+        $stmt = $connect->prepare("
+            SELECT MONTH(created_at) AS month, SUM(rent) AS expense
+            FROM room_rental_registrations_apartment
+            WHERE user_id = :user_id AND payment_status = 'completed'
+            GROUP BY MONTH(created_at)
+            ORDER BY MONTH(created_at)
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $monthlyExpenseDataApartments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Combine both room and apartment monthly expense data
+        $months = [];
+        $expenseRooms = [];
+        $expenseApartments = [];
+
+        foreach ($monthlyExpenseDataRooms as $row) {
+            $months[] = $row['month'];
+            $expenseRooms[] = (float)$row['expense'];
+        }
+
+        foreach ($monthlyExpenseDataApartments as $row) {
+            if (!in_array($row['month'], $months)) {
+                $months[] = $row['month'];
+            }
+            $expenseApartments[] = (float)$row['expense'];
+        }
+
+        // Calculate Total Expenses for Rooms (10% of Rent)
+        $stmt = $connect->prepare("
+            SELECT SUM(sale) AS total_rent
+            FROM room_rental_registrations
+            WHERE user_id = :user_id AND payment_status = 'completed'
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $totalRentData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totalRent = $totalRentData['total_rent'] ?? 0;
+        $totalExpensesFromRooms = $totalRent * 0.1;
+
+        // Calculate Total Expenses for Apartments (10% of Rent)
+        $stmt = $connect->prepare("
+            SELECT SUM(rent) AS total_rent_apartment
+            FROM room_rental_registrations_apartment
+            WHERE user_id = :user_id AND payment_status = 'completed'
+        ");
+        $stmt->execute([':user_id' => $_SESSION['id']]);
+        $totalRentApartmentData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totalRentApartment = $totalRentApartmentData['total_rent_apartment'] ?? 0;
+        $totalExpensesFromApartments = $totalRentApartment * 0.1;
+
+        // Final Total Expenses (sum of both expenses)
+        $totalExpenses = $totalExpensesFromRooms + $totalExpensesFromApartments;
+    }
+?>
+
+<?php if ($_SESSION['role'] == 'user') { ?>
+    <div class="col-md-12">
+        <h2>Payment Status Overview</h2>
+        <div class="chart-container">
+            <div style="width: 48%; height: 300px; display: inline-block;">
+                <canvas id="userPaymentStatusChart" width="100" height="50"></canvas>
+            </div>
+
+            <div style="width: 48%; height: 300px; display: inline-block;">
+                <canvas id="userMonthlyExpenseChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; font-size: 18px;">
+            <strong>Total Expenses (Rooms): </strong>
+            <span style="font-size: 20px; color: red;">Rs.<?= number_format($totalExpensesFromRooms, 2) ?></span><br>
+            <strong>Total Expenses (Apartments): </strong>
+            <span style="font-size: 20px; color: red;">Rs.<?= number_format($totalExpensesFromApartments, 2) ?></span><br>
+            <strong>Total Expenses: </strong>
+            <span style="font-size: 24px; color: red;">Rs.<?= number_format($totalExpenses, 2) ?></span>
+        </div>
+    </div>
+
+    <input type="hidden" id="userLabels" value='<?= json_encode($labels) ?>'>
+    <input type="hidden" id="userPaidData" value='<?= json_encode($paidData) ?>'>
+    <input type="hidden" id="userUnpaidData" value='<?= json_encode($unpaidData) ?>'>
+    <input type="hidden" id="userMonthlyLabels" value='<?= json_encode($months) ?>'>
+    <input type="hidden" id="userMonthlyExpenseRooms" value='<?= json_encode($expenseRooms) ?>'>
+    <input type="hidden" id="userMonthlyExpenseApartments" value='<?= json_encode($expenseApartments) ?>'>
+
+    <script>
+        const userLabels = JSON.parse(document.getElementById('userLabels').value);
+        const userPaidData = JSON.parse(document.getElementById('userPaidData').value);
+        const userUnpaidData = JSON.parse(document.getElementById('userUnpaidData').value);
+
+        const userPaymentStatusCtx = document.getElementById('userPaymentStatusChart').getContext('2d');
+        new Chart(userPaymentStatusCtx, {
+            type: 'bar',
+            data: {
+                labels: userLabels,
+                datasets: [{
+                    label: 'Paid',
+                    data: userPaidData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Unpaid',
+                    data: userUnpaidData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Monthly Expense Chart (Rooms vs Apartments)
+        const userMonthlyLabels = JSON.parse(document.getElementById('userMonthlyLabels').value);
+        const userMonthlyExpenseRooms = JSON.parse(document.getElementById('userMonthlyExpenseRooms').value);
+        const userMonthlyExpenseApartments = JSON.parse(document.getElementById('userMonthlyExpenseApartments').value);
+
+        const userRevenueCtx = document.getElementById('userMonthlyExpenseChart').getContext('2d');
+        new Chart(userRevenueCtx, {
+            type: 'line',
+            data: {
+                labels: userMonthlyLabels,
+                datasets: [{
+                    label: 'Room Expenses',
+                    data: userMonthlyExpenseRooms,
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }, {
+                    label: 'Apartment Expenses',
+                    data: userMonthlyExpenseApartments,
+                    fill: false,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .chart-container > div {
+            width: 48%;
+        }
+    </style>
+<?php } ?>
 
 </div>
-				</div>
-			</div> 
-		 </div>
-	</section>
-<?php include '../include/footer.php';?>
+</div>
+</div> 
+</div>
+</section>
+<footer><?php include '../include/footer.php';?></footer>
+
+
