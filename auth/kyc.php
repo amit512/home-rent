@@ -31,7 +31,11 @@ if ($kyc) {
         exit;
     } else {
         // If KYC is under review, show "under review" message
-        echo "KYC is under review. Please wait for the verification process.";
+        echo "<script>alert('KYC submitted successfully. Waiting for verification.'); window.location.href = 'login.php';</script>";
+
+        session_destroy();
+        
+        
         exit;
     }
 }
@@ -101,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = 'Pending'; // KYC status initially is 'Pending'
     $stmt->execute([ $userName, $userMobile, $fatherName, $motherName, $residentialProofPath, $idProofPath, $selfiePath, $status]);
 
-    echo "KYC submitted successfully. Waiting for verification.";
+    echo "<script>alert('KYC submitted successfully. Waiting for verification.');</script>";
 }
 
 ?>
@@ -110,26 +114,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html>
 <head>
     <title>KYC Verification</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+
+        /* Form Styles */
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Navigation Button Styles */
+        .nav-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-    <h1>KYC Verification</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <label for="father_name">Father's Name:</label>
-        <input type="text" name="father_name" id="father_name" required><br><br>
 
-        <label for="mother_name">Mother's Name:</label>
-        <input type="text" name="mother_name" id="mother_name" required><br><br>
+    <div class="container">
+        <h1>KYC Verification</h1>
 
-        <label for="residential_proof">Upload Residential Proof:</label>
-        <input type="file" name="residential_proof" id="residential_proof" required><br><br>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="father_name">Father's Name:</label>
+            <input type="text" name="father_name" id="father_name" required><br>
 
-        <label for="id_proof">Upload Legal ID Proof:</label>
-        <input type="file" name="id_proof" id="id_proof" required><br><br>
+            <label for="mother_name">Mother's Name:</label>
+            <input type="text" name="mother_name" id="mother_name" required><br>
 
-        <label for="selfie">Upload Selfie:</label>
-        <input type="file" name="selfie" id="selfie" required><br><br>
+            <label for="residential_proof">Upload Residential Proof:</label>
+            <input type="file" name="residential_proof" id="residential_proof" required><br>
 
-        <button type="submit">Submit KYC</button>
-    </form>
+            <label for="id_proof">Upload Legal ID Proof:</label>
+            <input type="file" name="id_proof" id="id_proof" required><br>
+
+            <label for="selfie">Upload Selfie:</label>
+            <input type="file" name="selfie" id="selfie" required><br>
+
+            <button type="submit">Submit KYC</button>
+        </form>
+
+        <!-- Navigation button to go back to the dashboard or login page -->
+        <a href="logout.php"><button class="nav-btn">Go to Home</button></a>
+        
+    </div>
+
 </body>
 </html>
